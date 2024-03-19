@@ -1,0 +1,51 @@
+#include <LiquidCrystal_I2C.h>
+
+// Deklarasi pin sensor PIR
+#define PIR_PIN 12
+
+// Deklarasi alamat I2C LCD
+#define LCD_ADDRESS 0x27
+
+// Deklarasi objek LCD
+LiquidCrystal_I2C lcd(LCD_ADDRESS, 16, 2);
+
+void setup() {
+  // Inisialisasi serial monitor
+  Serial.begin(9600);
+
+  // Inisialisasi LCD
+  lcd.init();
+  lcd.backlight();
+  for (int i = 0; i <= 36; i++) {
+    lcd.setCursor(14, 0);
+    lcd.print("Sensor Gerak");
+    lcd.setCursor(14, 1);
+    lcd.print("Ahmad Fauzidan");
+    lcd.scrollDisplayLeft();
+    delay(100);
+  }
+  lcd.clear();
+
+  // Set pin PIR sebagai input
+  pinMode(PIR_PIN, INPUT);
+}
+
+void loop() {
+  // Baca nilai sensor PIR
+  int pirValue = digitalRead(PIR_PIN);
+  delay(100);
+  if (pirValue == HIGH) {
+    lcd.setCursor(0, 0);
+    lcd.print("Gerakan");
+    lcd.setCursor(0, 1);
+    lcd.print("terdeteksi");
+    delay(3000); // Tampilkan pesan selama 3 detik
+    lcd.clear();
+  } else {
+    lcd.setCursor(0, 0);
+    lcd.print("Gerakan tidak");
+    lcd.setCursor(0, 1);
+    lcd.print("terdeteksi");
+  }
+}
+
