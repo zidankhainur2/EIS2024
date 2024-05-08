@@ -1,0 +1,44 @@
+#include <DHT.h>
+
+#define DHTPIN 14   
+#define DHTTYPE DHT22
+
+#define TRIGGER_PIN 4 
+#define ECHO_PIN 5    
+
+DHT dht(DHTPIN, DHTTYPE);
+
+void setup() {
+  Serial.begin(115200);
+  dht.begin();
+  pinMode(TRIGGER_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+}
+
+void loop() {
+  float humidity = dht.readHumidity();
+  float temperature = dht.readTemperature();
+
+  Serial.print("Suhu: ");
+  Serial.print(temperature);
+  Serial.print(" *C\t Kelembaban: ");
+  Serial.print(humidity);
+  Serial.println(" %");
+
+  // Mengukur jarak dengan sensor ultrasonik
+  long duration, distance;
+  digitalWrite(TRIGGER_PIN, LOW);
+  delayMicroseconds(2);
+  digitalWrite(TRIGGER_PIN, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(TRIGGER_PIN, LOW);
+  duration = pulseIn(ECHO_PIN, HIGH);
+  distance = (duration / 2) / 29.1; 
+
+  // Menampilkan hasil pengukuran jarak
+  Serial.print("Jarak: ");
+  Serial.print(distance);
+  Serial.println(" cm");
+
+  delay(2000); 
+}
