@@ -1,0 +1,55 @@
+#include <Wire.h> 
+#include <LiquidCrystal_I2C.h>
+
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+int valorsensorgas;
+int LED = 7;
+int buzzer = 8; // Pin untuk speaker buzzer
+
+// Tentukan batas bawah dan atas untuk deteksi gas
+const int gasThresholdLow = 300;  
+const int gasThresholdHigh = 1000; 
+
+void setup() { 
+  pinMode(LED, OUTPUT);
+  pinMode(buzzer, OUTPUT); // Inisialisasi pin buzzer sebagai OUTPUT
+  lcd.init(); // Inisialisasi LCD
+  lcd.backlight(); // Mengaktifkan lampu latar LCD
+  Serial.begin(9600);
+}
+
+void loop() {
+  valorsensorgas = analogRead(A1);
+  delay(1000);
+
+  lcd.clear();
+  lcd.print("sensor_gas:");
+  lcd.print(valorsensorgas, 1); 
+  Serial.print(valorsensorgas);
+  Serial.println();
+
+  // Cek apakah nilai sensor gas berada dalam rentang tertentu
+  if (valorsensorgas >= gasThresholdLow && valorsensorgas <= gasThresholdHigh) {
+    digitalWrite(LED, HIGH); // Nyalakan LED
+    tone(buzzer, 1000); // Nyalakan suara buzzer dengan frekuensi 1000Hz
+    delay(1000); // Biarkan bunyi selama 1 detik
+    noTone(buzzer); // Matikan suara buzzer
+    
+    // Menampilkan jenis gas yang terdeteksi pada LCD
+    lcd.setCursor(0, 1); // Pindah ke baris kedua
+    if (valorsensorgas < 500) {
+      lcd.print("Gas: LPG");
+    } else if (valorsensorgas < 700) {
+      lcd.print("Gas: Propane");
+    } else if (valorsensorgas < 900) {
+      lcd.print("Gas: Hydrogen");
+    } else {
+      lcd.print("Gas: Methane");
+    }
+  } else {
+    digitalWrite(LED, LOW); // Matikan LED
+    noTone(buzzer); // Pastikan buzzer mati jika gas tidak terdeteksi
+  }
+  delay(1000);
+}
